@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "foodify"
+version = "0.1.0"
+description = ""
+authors = ["Viktor Nikel <v.nikell.28@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+requests = "^2.31.0"
+pydantic = "^1.10.8"
+python-dotenv = "^1.0.0"
+openai = "^0.27.7"
+loguru = "^0.7.0"
+python-telegram-bot = "^20.3"
+telegram-menu = "^2.1.1"
+sqlalchemy = "^2.0.15"
+
+
+[tool.poetry.group.dev.dependencies]
+types-requests = "^2.31.0.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
