@@ -6,7 +6,7 @@ import asyncpg.pgproto.pgproto as pg_proto
 import pydantic.json
 import sqlalchemy
 from sqlalchemy import MetaData, orm
-from sqlalchemy.dialects.postgresql import UUID, asyncpg
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.dialects.postgresql import base as pg_base
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import as_declarative, declared_attr
@@ -73,25 +73,8 @@ class Base:
         return str(self.id)
 
 
-# Patch sqlalchemy
-class AsyncpgUUID(asyncpg.AsyncpgUUID):
-    def bind_processor(self, dialect):
-        if not self.as_uuid and dialect.use_native_uuid:
-
-            def process(value):
-                if value is not None:
-                    if not isinstance(value, uuid.UUID):
-                        return asyncpg._python_UUID(value)
-                return value
-
-            return process
-
-
 # To make pydantic know about postgres uuid type
 pydantic.json.ENCODERS_BY_TYPE[pg_proto.UUID] = str
-
-# Patch asyncpg
-asyncpg.PGDialect_asyncpg.colspecs[UUID] = AsyncpgUUID
 
 
 # Patch sqlalchemy/databases
