@@ -5,9 +5,10 @@ import uuid
 import asyncpg.pgproto.pgproto as pg_proto
 import pydantic.json
 import sqlalchemy
-from sqlalchemy import MetaData, orm
+from sqlalchemy import MetaData
+from sqlalchemy.ext.asyncio import async_sessionmaker
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.dialects.postgresql import base as pg_base
+
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import as_declarative, declared_attr
 
@@ -21,7 +22,7 @@ async_engine = create_async_engine(
     future=True,
     echo=True,
 )
-session_async = orm.sessionmaker(
+sessionmaker = async_sessionmaker(  # type: ignore
     bind=async_engine, expire_on_commit=False, class_=AsyncSession
 )
 
@@ -35,7 +36,7 @@ def get_table_name_from_class(cls: "Base") -> str:
     """
     Generate a table name for the model class
     """
-    return camel_to_snake(cls.__name__) + "s"
+    return camel_to_snake(cls.__name__) + "s"  # type: ignore
 
 
 @as_declarative(metadata=metadata)
@@ -75,7 +76,3 @@ class Base:
 
 # To make pydantic know about postgres uuid type
 pydantic.json.ENCODERS_BY_TYPE[pg_proto.UUID] = str
-
-
-# Patch sqlalchemy/databases
-pg_base._python_UUID = lambda v: str(v) if isinstance(v, UUID) else v
